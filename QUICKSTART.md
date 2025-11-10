@@ -43,11 +43,14 @@ from siray import Siray
 # Initialize client
 client = Siray()  # Uses SIRAY_API_KEY from environment
 
+# Convert a local image to a base64 data URI (optional helper)
+local_image = client.load_from_local("~/Pictures/astronaut.png")
+
 # Generate an image
 result = client.image.generate_async(
     model="black-forest-labs/flux-1.1-pro-ultra-i2i",
     prompt="A beautiful sunset over mountains with vibrant colors",
-    image="https://example.com/your-input-image.jpg"
+    image=local_image,
 )
 
 print(result)

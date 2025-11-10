@@ -49,15 +49,22 @@ from siray import Siray
 
 client = Siray()
 
+# Optional: load a local file and get a ready-to-use data URI
+local_image = client.load_from_local("~/Pictures/input.jpg")
+
 # Generate image asynchronously
 response = client.image.generate_async(
     model="black-forest-labs/flux-1.1-pro-ultra-i2i",
     prompt="A beautiful sunset over mountains with vibrant colors",
-    image="https://example.com/input-image.jpg"
+    image=local_image,
 )
 
 print(f"Task ID: {response.task_id}")
 ```
+
+> `client.load_from_local(path)` reads the file, infers the MIME type, and returns a
+> `data:<mime>;base64,...` string accepted by the API. This is handy when you do not
+> have a public URL for the asset you want to condition on.
 
 #### Query Task Status
 

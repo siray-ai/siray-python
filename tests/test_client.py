@@ -1,5 +1,6 @@
 """Tests for Siray client."""
 
+import base64
 import os
 import pytest
 from siray import Siray
@@ -75,3 +76,24 @@ class TestVideoNamespace:
         assert hasattr(client.video, "generate_async")
         assert hasattr(client.video, "query_task")
         assert hasattr(client.video, "run")
+
+
+class TestLoadFromLocal:
+    """Tests for the helper that loads local assets."""
+
+    def test_load_from_local_returns_data_uri(self, tmp_path):
+        client = Siray(api_key="test-api-key")
+        image_path = tmp_path / "sample.jpg"
+        content = b"sample-bytes"
+        image_path.write_bytes(content)
+
+        result = client.load_from_local(str(image_path))
+
+        assert result.startswith("data:image/jpeg;base64,")
+        _, encoded = result.split(",", 1)
+        assert encoded == base64.b64encode(content).decode("ascii")
+
+    def test_load_from_local_missing_file(self):
+        client = Siray(api_key="test-api-key")
+        with pytest.raises(FileNotFoundError):
+            client.load_from_local("/non/existent/file.png")
