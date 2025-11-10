@@ -60,8 +60,10 @@ def verify_client_creation():
         # Verify namespace methods
         assert hasattr(client.image, "generate_async"), "Missing image.generate_async"
         assert hasattr(client.image, "query_task"), "Missing image.query_task"
+        assert hasattr(client.image, "run"), "Missing image.run"
         assert hasattr(client.video, "generate_async"), "Missing video.generate_async"
         assert hasattr(client.video, "query_task"), "Missing video.query_task"
+        assert hasattr(client.video, "run"), "Missing video.run"
         print("  ✓ All required methods exist")
 
         return True

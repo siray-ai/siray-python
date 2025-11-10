@@ -75,6 +75,24 @@ elif status.is_failed():
     print(f"✗ Failed: {status.fail_reason}")
 ```
 
+#### Run and Wait for Completion
+
+```python
+# Convenience helper that starts a task and polls until it finishes
+status = client.image.run(
+    model="black-forest-labs/flux-1.1-pro-ultra-i2i",
+    prompt="A futuristic city skyline at dusk",
+    image="https://example.com/input-image.jpg",
+    poll_interval=2.0,  # optional, defaults to 2 seconds
+)
+
+print(f"Final status: {status.status}")
+if status.is_completed():
+    print(status.outputs)
+```
+
+> See `examples/blocking_generation.py` for a full runnable script that uses `image.run()`.
+
 ### Video Generation
 
 ```python
@@ -89,7 +107,16 @@ response = client.video.generate_async(
 )
 
 print(f"Task ID: {response.task_id}")
+
+# Or block until the task finishes
+status = client.video.run(
+    model="your-video-model",
+    prompt="A cat playing piano in a cozy room",
+)
+print(status.status)
 ```
+
+> A complete blocking flow for both media types lives in `examples/blocking_generation.py`.
 
 ## API Reference
 
@@ -168,6 +195,22 @@ elif status.is_failed():
     print(f"Error: {status.fail_reason}")
 ```
 
+#### `image.run(model, prompt, poll_interval=2.0, timeout=None, **kwargs)`
+
+Start an async image generation and continuously poll its status until it completes or fails.
+
+**Parameters:**
+- `model` (str): Model identifier
+- `prompt` (str): Text prompt
+- `poll_interval` (float, optional): Seconds between status checks (minimum 0.1). Default: `2.0`
+- `timeout` (float | None, optional): Maximum seconds to wait before raising `TimeoutError`. `None` disables the timeout.
+- `**kwargs`: Additional model-specific parameters
+
+**Returns:** `TaskStatus` with the final state of the task.
+
+**Raises:**
+- `TimeoutError`: If the task is still processing when the timeout is reached
+
 ### Video
 
 #### `video.generate_async(model, prompt, **kwargs)`
@@ -206,10 +249,21 @@ status = client.video.query_task(response.task_id)
 if status.is_completed():
     print(f"Generated {len(status.outputs)} video(s)")
     for url in status.outputs:
-        print(f"  - {url}")
+    print(f"  - {url}")
 elif status.is_failed():
     print(f"Error: {status.fail_reason}")
 ```
+
+#### `video.run(model, prompt, poll_interval=2.0, timeout=None, **kwargs)`
+
+Start an async video generation and wait for it to complete by polling the task status.
+
+**Parameters:** Same as `image.run`.
+
+**Returns:** Final `TaskStatus`.
+
+**Raises:**
+- `TimeoutError`: If the task does not finish before the timeout
 
 ## Response Models
 
@@ -284,6 +338,7 @@ See the [examples](examples/) directory for more comprehensive usage examples:
 - [Basic image generation](examples/image_generation.py)
 - [Video generation](examples/video_generation.py)
 - [Error handling](examples/error_handling.py)
+- [Blocking generation helper (`run`)](examples/blocking_generation.py)
 
 ## Development
 

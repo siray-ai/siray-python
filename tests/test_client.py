@@ -63,6 +63,7 @@ class TestImageNamespace:
         client = Siray(api_key="test-api-key")
         assert hasattr(client.image, "generate_async")
         assert hasattr(client.image, "query_task")
+        assert hasattr(client.image, "run")
 
 
 class TestVideoNamespace:
@@ -73,3 +74,4 @@ class TestVideoNamespace:
         client = Siray(api_key="test-api-key")
         assert hasattr(client.video, "generate_async")
         assert hasattr(client.video, "query_task")
+        assert hasattr(client.video, "run")

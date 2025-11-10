@@ -53,6 +53,22 @@ result = client.image.generate_async(
 print(result)
 ```
 
+### Run and Wait for Completion
+
+If you prefer to block until the generation finishes, use the combined helper:
+
+```python
+status = client.image.run(
+    model="black-forest-labs/flux-1.1-pro-ultra-i2i",
+    prompt="An astronaut exploring a neon forest",
+    image="https://example.com/astronaut.png",
+    poll_interval=2.0,  # optional tuning
+)
+
+print(status.status)
+print(status.outputs)
+```
+
 ## Your First Video Generation
 
 ```python
@@ -66,6 +82,13 @@ result = client.video.generate_async(
 )
 
 print(result)
+
+# Or block until completion
+status = client.video.run(
+    model="your-video-model",
+    prompt="A cat playing piano in a cozy room",
+)
+print(status.status)
 ```
 
 ## Error Handling

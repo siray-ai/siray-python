@@ -1,6 +1,7 @@
 """Video generation resources for Siray SDK."""
 
-from typing import Any
+import time
+from typing import Any, Optional
 
 from ..models import GenerationResponse, TaskStatus
 
@@ -78,3 +79,43 @@ class Video:
         """
         data = self._client.get(f"/v1/video/generations/async/{task_id}")
         return TaskStatus(data)
+
+    def run(
+        self,
+        model: str,
+        prompt: str,
+        poll_interval: float = 2.0,
+        timeout: Optional[float] = None,
+        **kwargs: Any,
+    ) -> TaskStatus:
+        """
+        Start an async video generation and block until it finishes.
+
+        Args:
+            model: Model identifier
+            prompt: Text prompt for video generation
+            poll_interval: Seconds between task status checks (default 2s)
+            timeout: Maximum seconds to wait before raising TimeoutError (None disables)
+            **kwargs: Additional model-specific parameters
+
+        Returns:
+            Final TaskStatus once the task completes or fails
+
+        Raises:
+            TimeoutError: If timeout is reached before the task resolves
+        """
+        response = self.generate_async(model=model, prompt=prompt, **kwargs)
+        poll_interval = max(poll_interval, 0.1)
+        start_time = time.monotonic()
+
+        while True:
+            status = self.query_task(response.task_id)
+            if not status.is_processing():
+                return status
+
+            if timeout is not None and (time.monotonic() - start_time) >= timeout:
+                raise TimeoutError(
+                    f"Video task {response.task_id} did not finish within {timeout} seconds"
+                )
+
+            time.sleep(poll_interval)
