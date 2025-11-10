@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/siray.svg)](https://badge.fury.io/py/siray)
 [![Python version](https://img.shields.io/pypi/pyversions/siray.svg)](https://pypi.org/project/siray/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 The official Python client library for [Siray AI](https://siray.ai) - a platform for AI-powered image and video generation.
 
@@ -335,12 +335,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
 - Documentation: https://docs.siray.ai
-- API Reference: https://api.siray.ai/docs
+- API Reference: https://docs.siray.ai/api-reference/
 - Issues: https://github.com/siray-ai/siray-python/issues
 - Email: support@siray.ai
 
