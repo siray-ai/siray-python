@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="siray",
-    version="0.1.0",
+    version="0.2.0",
     author="Siray AI",
     author_email="support@siray.ai",
     description="Python client library for Siray AI API",
