@@ -120,15 +120,15 @@ class TaskStatus:
 
     def is_completed(self) -> bool:
         """Check if the task is completed."""
-        return self.status.upper() in ("COMPLETED", "SUCCESS", "SUCCEEDED")
+        return self.status.upper() in "SUCCESS"
 
     def is_failed(self) -> bool:
         """Check if the task has failed."""
-        return self.status.upper() in ("FAILED", "ERROR")
+        return self.status.upper() in "FAILURE"
 
     def is_processing(self) -> bool:
         """Check if the task is still processing."""
-        return self.status.upper() in ("PENDING", "PROCESSING", "RUNNING", "IN_PROGRESS")
+        return self.status.upper() in ("NOT_START", "SUBMITTED", "QUEUED", "IN_PROGRESS")
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
