@@ -49,7 +49,7 @@ class Video:
             **kwargs,
         }
 
-        data = self._client.post("/v1/video/generations/async", data=payload)
+        data = self._client.post("/v1/video/generations", data=payload)
         return GenerationResponse(data)
 
     def query_task(self, task_id: str) -> TaskStatus:
@@ -77,7 +77,7 @@ class Video:
             >>> elif status.is_failed():
             ...     print(f"Error: {status.fail_reason}")
         """
-        data = self._client.get(f"/v1/video/generations/async/{task_id}")
+        data = self._client.get(f"/v1/video/generations/{task_id}")
         return TaskStatus(data)
 
     def run(
