@@ -25,6 +25,16 @@ class TestSirayClient:
         client = Siray(api_key="test-api-key", base_url="https://custom.api.url")
         assert client.base_url == "https://custom.api.url"
 
+    def test_client_initialization_with_default_timeout(self):
+        """Test client initialization with default timeout."""
+        client = Siray(api_key="test-api-key")
+        assert client.timeout == 120
+
+    def test_client_initialization_with_custom_timeout(self):
+        """Test client initialization with custom timeout."""
+        client = Siray(api_key="test-api-key", timeout=60)
+        assert client.timeout == 60
+
     def test_client_initialization_without_api_key_raises_error(self):
         """Test that missing API key raises ValueError."""
         # Clear environment variable if it exists

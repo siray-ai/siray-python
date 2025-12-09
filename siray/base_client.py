@@ -20,16 +20,18 @@ from .exceptions import (
 class BaseClient:
     """Base HTTP client for making API requests."""
 
-    def __init__(self, api_key: str, base_url: str = "https://api.siray.ai"):
+    def __init__(self, api_key: str, base_url: str = "https://api.siray.ai", timeout: int = 120):
         """
         Initialize the base client.
 
         Args:
             api_key: API key for authentication
             base_url: Base URL for the API (default: https://api.siray.ai)
+            timeout: Request timeout in seconds (default: 120)
         """
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
         self.session = None
 
     def _get_headers(self) -> Dict[str, str]:
@@ -93,7 +95,7 @@ class BaseClient:
                         json=data,
                         params=params,
                         headers=headers,
-                        timeout=30.0,
+                        timeout=self.timeout,
                     )
             else:
                 # Fallback to requests
@@ -103,7 +105,7 @@ class BaseClient:
                     json=data,
                     params=params,
                     headers=headers,
-                    timeout=30,
+                    timeout=self.timeout,
                 )
 
             # Parse response

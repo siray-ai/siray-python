@@ -43,6 +43,7 @@ class Siray:
         self,
         api_key: Optional[str] = None,
         base_url: str = "https://api.siray.ai",
+        timeout: int = 120,
     ):
         """
         Initialize the Siray client.
@@ -51,6 +52,7 @@ class Siray:
             api_key: API key for authentication. If not provided, will look for
                     SIRAY_API_KEY environment variable.
             base_url: Base URL for the API (default: https://api.siray.ai)
+            timeout: Request timeout in seconds (default: 120)
 
         Raises:
             ValueError: If no API key is provided or found in environment
@@ -65,7 +67,7 @@ class Siray:
                 "through SIRAY_API_KEY environment variable"
             )
 
-        self._base_client = BaseClient(api_key=api_key, base_url=base_url)
+        self._base_client = BaseClient(api_key=api_key, base_url=base_url, timeout=timeout)
 
         # Initialize namespaces
         self.image = Image(self._base_client)
@@ -80,6 +82,11 @@ class Siray:
     def base_url(self) -> str:
         """Get the base URL."""
         return self._base_client.base_url
+
+    @property
+    def timeout(self) -> int:
+        """Get the request timeout in seconds."""
+        return self._base_client.timeout
 
     def load_from_local(
         self,
