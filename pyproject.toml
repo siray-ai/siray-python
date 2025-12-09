@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "siray"
-version = "0.2.1"
+version = "0.2.2"
 description = "Python client library for Siray AI API"
 readme = "README.md"
 requires-python = ">=3.7"
