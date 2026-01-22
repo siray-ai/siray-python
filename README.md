@@ -135,11 +135,11 @@ from siray import Siray
 client = Siray()
 
 # Upload a file and get its URL
-url = client.files.upload("path/to/image.jpg")
+url = client.file.upload("path/to/image.jpg")
 print(f"Uploaded to: {url}")
 
 # Upload a video file
-url = client.files.upload("path/to/video.mp4")
+url = client.file.upload("path/to/video.mp4")
 print(f"Uploaded to: {url}")
 ```
 
@@ -168,13 +168,13 @@ Main client for interacting with Siray AI API.
 - `timeout` (int, optional): Request timeout in seconds. Default: `120`
 
 **Attributes:**
-- `files`: File upload namespace
+- `file`: File upload namespace
 - `image`: Image generation namespace
 - `video`: Video generation namespace
 
-### Files
+### File
 
-#### `files.upload(file_path)`
+#### `file.upload(file_path)`
 
 Upload a file to Siray storage with automatic multipart support for large files.
 
@@ -195,10 +195,10 @@ Upload a file to Siray storage with automatic multipart support for large files.
 **Example:**
 ```python
 # Upload an image
-url = client.files.upload("path/to/image.jpg")
+url = client.file.upload("path/to/image.jpg")
 
 # Upload a video
-url = client.files.upload("path/to/video.mp4")
+url = client.file.upload("path/to/video.mp4")
 ```
 
 ### Image

@@ -8,9 +8,9 @@ from ..base_client import BaseClient
 from ..upload.s3_uploader import S3Uploader
 
 
-class Files:
+class File:
     """
-    Files resource for uploading files to Siray storage.
+    File resource for uploading files to Siray storage.
 
     This resource handles file uploads using S3 protocol with temporary
     STS credentials. Files larger than 8MB are automatically uploaded
@@ -19,7 +19,7 @@ class Files:
 
     def __init__(self, client: BaseClient):
         """
-        Initialize the Files resource.
+        Initialize the File resource.
 
         Args:
             client: Base client instance for making API requests
@@ -31,7 +31,8 @@ class Files:
         Fetch STS token from the API.
 
         Returns:
-            Dictionary containing credentials, bucket_name, upload_path, and endpoint
+            Dictionary containing credentials, bucket_name, upload_path,
+            upload_endpoint, and access_endpoint
 
         Raises:
             APIError: If the API request fails
@@ -68,7 +69,7 @@ class Files:
             >>> client = Siray(api_key="your-api-key")
             >>>
             >>> # Upload a file
-            >>> url = client.files.upload("path/to/image.jpg")
+            >>> url = client.file.upload("path/to/image.jpg")
             >>> print(f"Uploaded to: {url}")
         """
         # Validate file exists
@@ -82,26 +83,36 @@ class Files:
         credentials = sts_data.get("credentials", {})
         bucket_name = sts_data.get("bucket_name")
         upload_path = sts_data.get("upload_path", "")
-        endpoint = sts_data.get("endpoint")
+        upload_endpoint = sts_data.get("upload_endpoint")
+        access_endpoint = sts_data.get("access_endpoint")
 
         if not credentials or not bucket_name:
             raise ValueError("Invalid STS token response: missing credentials or bucket_name")
 
+        if not upload_endpoint:
+            raise ValueError("Invalid STS token response: missing upload_endpoint")
+
         # Determine object key using upload_path + filename
         filename = path.name
-        object_key = os.path.join(upload_path, filename).replace("\\", "/")
+        # Remove leading slash from upload_path if present
+        clean_upload_path = upload_path.lstrip("/")
+        object_key = os.path.join(clean_upload_path, filename).replace("\\", "/")
 
         # Infer content type from file extension
         content_type, _ = mimetypes.guess_type(str(path))
 
+        # Determine region (default to cn-bj if not provided)
+        region = credentials.get("region", "cn-bj")
+
         # Create S3 uploader with temporary credentials
         uploader = S3Uploader(
             access_key_id=credentials.get("access_key_id"),
-            secret_access_key=credentials.get("secret_access_key"),
-            session_token=credentials.get("session_token"),
-            region=credentials.get("region", "us-east-1"),
+            secret_access_key=credentials.get("access_key_secret"),
+            session_token=credentials.get("security_token"),
+            region=region,
             bucket_name=bucket_name,
-            endpoint_url=endpoint,
+            endpoint_url=upload_endpoint,
+            access_endpoint=access_endpoint,
         )
 
         # Upload file

@@ -3,6 +3,8 @@
 import base64
 import os
 import pytest
+
+from examples.image_generation import client
 from siray import Siray
 from siray.exceptions import (
     SirayError,

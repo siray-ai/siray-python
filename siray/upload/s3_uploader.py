@@ -27,6 +27,7 @@ class S3Uploader:
         region: str,
         bucket_name: str,
         endpoint_url: Optional[str] = None,
+        access_endpoint: Optional[str] = None,
     ):
         """
         Initialize S3 uploader with temporary credentials.
@@ -37,7 +38,8 @@ class S3Uploader:
             session_token: AWS session token from STS token
             region: AWS region
             bucket_name: S3 bucket name
-            endpoint_url: Optional custom S3 endpoint URL
+            endpoint_url: Optional custom S3 endpoint URL for upload
+            access_endpoint: Optional custom S3 endpoint URL for access
 
         Raises:
             ImportError: If boto3 is not installed
@@ -49,6 +51,16 @@ class S3Uploader:
             )
 
         self.bucket_name = bucket_name
+        self.region = region
+        self.access_endpoint = access_endpoint
+
+        # Create S3 client configuration for UCloud US3 compatibility
+        from botocore.client import Config
+
+        config = Config(
+            signature_version='s3v4',
+            s3={'addressing_style': 'path'}
+        )
 
         # Create S3 client with temporary credentials
         self.s3_client = boto3.client(
@@ -58,6 +70,8 @@ class S3Uploader:
             aws_session_token=session_token,
             region_name=region,
             endpoint_url=endpoint_url,
+            config=config,
+            verify=False,  # Disable SSL verification for UCloud US3
         )
 
     def upload_file(
@@ -181,21 +195,24 @@ class S3Uploader:
 
     def _get_object_url(self, object_key: str) -> str:
         """Get the URL for an uploaded object."""
-        # Get bucket location
+        # Use access_endpoint if provided
+        if self.access_endpoint:
+            # Ensure the endpoint has protocol
+            endpoint = self.access_endpoint
+            if not endpoint.startswith('http://') and not endpoint.startswith('https://'):
+                endpoint = f"https://{endpoint}"
+            # Construct URL with object key
+            return f"{endpoint.rstrip('/')}/{object_key}"
+
+        # Handle custom endpoint from upload
         try:
-            location = self.s3_client.get_bucket_location(Bucket=self.bucket_name)
-            region = location.get("LocationConstraint")
-
-            # Handle custom endpoint
-            if self.s3_client._endpoint.host:
+            if self.s3_client._endpoint and hasattr(self.s3_client._endpoint, 'host'):
                 endpoint = self.s3_client._endpoint.host
-                return f"https://{endpoint}/{self.bucket_name}/{object_key}"
-
-            # Standard S3 URL format
-            if region:
-                return f"https://{self.bucket_name}.s3.{region}.amazonaws.com/{object_key}"
-            else:
-                return f"https://{self.bucket_name}.s3.amazonaws.com/{object_key}"
+                # For UCloud US3 and other S3-compatible services
+                # URL format: https://{endpoint}/{object_key}
+                return f"https://{endpoint}/{object_key}"
         except:
-            # Fallback to basic URL format
-            return f"https://{self.bucket_name}.s3.amazonaws.com/{object_key}"
+            pass
+
+        # Fallback: construct URL from bucket and region
+        return f"https://{self.bucket_name}.{self.region}.ufileos.com/{object_key}"

@@ -24,7 +24,7 @@ def main():
 
     try:
         # Upload file and get URL
-        url = client.files.upload(file_path)
+        url = client.file.upload(file_path)
         print(f"✓ File uploaded successfully!")
         print(f"  URL: {url}")
     except FileNotFoundError as e:
@@ -42,7 +42,7 @@ def main():
     large_file_path = "path/to/large/video.mp4"
 
     try:
-        url = client.files.upload(large_file_path)
+        url = client.file.upload(large_file_path)
         print(f"✓ Large file uploaded successfully!")
         print(f"  URL: {url}")
     except FileNotFoundError:

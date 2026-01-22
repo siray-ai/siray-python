@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="siray",
-    version="0.2.2",
+    version="0.3.0",
     author="Siray AI",
     author_email="support@siray.ai",
     description="Python client library for Siray AI API",
@@ -31,6 +31,7 @@ setup(
     install_requires=[
         "httpx>=0.24.0",
         "requests>=2.28.0",  # Fallback if httpx not available
+        "boto3>=1.26.0",
     ],
     extras_require={
         "dev": [

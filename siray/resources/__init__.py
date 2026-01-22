@@ -1,7 +1,7 @@
 """Resources for Siray SDK."""
 
-from .files import Files
+from .file import File
 from .image import Image
 from .video import Video
 
-__all__ = ["Files", "Image", "Video"]
+__all__ = ["File", "Image", "Video"]

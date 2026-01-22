@@ -20,7 +20,13 @@ from .exceptions import (
 class BaseClient:
     """Base HTTP client for making API requests."""
 
-    def __init__(self, api_key: str, base_url: str = "https://api.siray.ai", timeout: int = 120):
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str = "https://api.siray.ai",
+        timeout: int = 120,
+        auth_type: str = "bearer",
+    ):
         """
         Initialize the base client.
 
@@ -28,30 +34,46 @@ class BaseClient:
             api_key: API key for authentication
             base_url: Base URL for the API (default: https://api.siray.ai)
             timeout: Request timeout in seconds (default: 120)
+            auth_type: Authentication type - "bearer" or "api-key" (default: "bearer")
         """
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.auth_type = auth_type.lower()
         self.session = None
 
     def _get_headers(self) -> Dict[str, str]:
         """Get headers for API requests."""
-        return {
-            "Authorization": f"Bearer {self.api_key}",
+        headers = {
             "Content-Type": "application/json",
         }
 
-    def _handle_error_response(self, status_code: int, response_data: Dict[str, Any]):
+        if self.auth_type == "api-key":
+            headers["Authorization"] = f"API-KEY {self.api_key}"
+        else:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        return headers
+
+    def _handle_error_response(self, status_code: int, response_data: Any):
         """Handle error responses from the API."""
-        error_info = response_data.get("error", {})
-        message = error_info.get("message", "Unknown error")
+        # Handle string responses
+        if isinstance(response_data, str):
+            message = response_data
+        else:
+            error_info = response_data.get("error", {}) if isinstance(response_data, dict) else {}
+            message = error_info.get("message", "Unknown error")
 
         if status_code == 401:
             raise AuthenticationError(message, status_code=status_code)
         elif status_code == 400:
-            code = error_info.get("code")
-            error_type = error_info.get("type")
-            raise BadRequestError(message, code=code, error_type=error_type, status_code=status_code)
+            if isinstance(response_data, dict):
+                error_info = response_data.get("error", {})
+                code = error_info.get("code")
+                error_type = error_info.get("type")
+                raise BadRequestError(message, code=code, error_type=error_type, status_code=status_code)
+            else:
+                raise BadRequestError(message, status_code=status_code)
         elif status_code == 500:
             raise InternalServerError(message, status_code=status_code)
         else:

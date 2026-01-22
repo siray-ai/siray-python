@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from .base_client import BaseClient
-from .resources.files import Files
+from .resources.file import File
 from .resources.image import Image
 from .resources.video import Video
 
@@ -19,7 +19,7 @@ class Siray:
     through namespace attributes.
 
     Attributes:
-        files: File upload namespace
+        file: File upload namespace
         image: Image generation namespace
         video: Video generation namespace
 
@@ -71,11 +71,15 @@ class Siray:
                 "through SIRAY_API_KEY environment variable"
             )
 
-        self._base_client = BaseClient(api_key=api_key, base_url=base_url, timeout=timeout)
-        self._gateway_client = BaseClient(api_key=api_key, base_url=gateway_url, timeout=timeout)
+        self._base_client = BaseClient(
+            api_key=api_key, base_url=base_url, timeout=timeout, auth_type="bearer"
+        )
+        self._gateway_client = BaseClient(
+            api_key=api_key, base_url=gateway_url, timeout=timeout, auth_type="api-key"
+        )
 
         # Initialize namespaces
-        self.files = Files(self._gateway_client)
+        self.file = File(self._gateway_client)
         self.image = Image(self._base_client)
         self.video = Video(self._base_client)
 
