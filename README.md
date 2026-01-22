@@ -125,21 +125,81 @@ print(status.status)
 
 > A complete blocking flow for both media types lives in `examples/blocking_generation.py`.
 
+### File Upload
+
+The SDK provides seamless file upload capabilities using S3 protocol with automatic multipart support for large files.
+
+```python
+from siray import Siray
+
+client = Siray()
+
+# Upload a file and get its URL
+url = client.files.upload("path/to/image.jpg")
+print(f"Uploaded to: {url}")
+
+# Upload a video file
+url = client.files.upload("path/to/video.mp4")
+print(f"Uploaded to: {url}")
+```
+
+**Automatic Multipart Upload:**
+- Files ≤8MB: Simple PUT upload
+- Files >8MB: Automatic multipart upload with 8MB chunks
+
+**Requirements:**
+- Requires `boto3` package (automatically installed with SDK)
+- Uses temporary STS credentials from Siray API
+
+> See `examples/file_upload.py` for complete usage examples.
+
 ## API Reference
 
 ### Client
 
-#### `Siray(api_key=None, base_url="https://api.siray.ai")`
+#### `Siray(api_key=None, base_url="https://api.siray.ai", gateway_url="https://api-gateway.siray.ai", timeout=120)`
 
 Main client for interacting with Siray AI API.
 
 **Parameters:**
 - `api_key` (str, optional): API key for authentication. If not provided, reads from `SIRAY_API_KEY` environment variable.
 - `base_url` (str, optional): Base URL for the API. Default: `https://api.siray.ai`
+- `gateway_url` (str, optional): Gateway URL for STS token requests. Default: `https://api-gateway.siray.ai`
+- `timeout` (int, optional): Request timeout in seconds. Default: `120`
 
 **Attributes:**
+- `files`: File upload namespace
 - `image`: Image generation namespace
 - `video`: Video generation namespace
+
+### Files
+
+#### `files.upload(file_path)`
+
+Upload a file to Siray storage with automatic multipart support for large files.
+
+**Parameters:**
+- `file_path` (str): Path to the local file to upload
+
+**Returns:** URL (str) of the uploaded file
+
+**Upload Strategy:**
+- Files ≤8MB: Simple PUT upload
+- Files >8MB: Multipart upload with 8MB chunks
+
+**Raises:**
+- `FileNotFoundError`: If file_path does not exist
+- `ImportError`: If boto3 is not installed
+- `APIError`: If STS token request or upload fails
+
+**Example:**
+```python
+# Upload an image
+url = client.files.upload("path/to/image.jpg")
+
+# Upload a video
+url = client.files.upload("path/to/video.mp4")
+```
 
 ### Image
 
@@ -342,6 +402,7 @@ except SirayError as e:
 
 See the [examples](examples/) directory for more comprehensive usage examples:
 
+- [File upload](examples/file_upload.py)
 - [Basic image generation](examples/image_generation.py)
 - [Video generation](examples/video_generation.py)
 - [Error handling](examples/error_handling.py)

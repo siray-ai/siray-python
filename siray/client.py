@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from .base_client import BaseClient
+from .resources.files import Files
 from .resources.image import Image
 from .resources.video import Video
 
@@ -18,6 +19,7 @@ class Siray:
     through namespace attributes.
 
     Attributes:
+        files: File upload namespace
         image: Image generation namespace
         video: Video generation namespace
 
@@ -43,6 +45,7 @@ class Siray:
         self,
         api_key: Optional[str] = None,
         base_url: str = "https://api.siray.ai",
+        gateway_url: str = "https://api-gateway.siray.ai",
         timeout: int = 120,
     ):
         """
@@ -52,6 +55,7 @@ class Siray:
             api_key: API key for authentication. If not provided, will look for
                     SIRAY_API_KEY environment variable.
             base_url: Base URL for the API (default: https://api.siray.ai)
+            gateway_url: Gateway URL for STS token (default: https://api-gateway.siray.ai)
             timeout: Request timeout in seconds (default: 120)
 
         Raises:
@@ -68,8 +72,10 @@ class Siray:
             )
 
         self._base_client = BaseClient(api_key=api_key, base_url=base_url, timeout=timeout)
+        self._gateway_client = BaseClient(api_key=api_key, base_url=gateway_url, timeout=timeout)
 
         # Initialize namespaces
+        self.files = Files(self._gateway_client)
         self.image = Image(self._base_client)
         self.video = Video(self._base_client)
 
@@ -82,6 +88,11 @@ class Siray:
     def base_url(self) -> str:
         """Get the base URL."""
         return self._base_client.base_url
+
+    @property
+    def gateway_url(self) -> str:
+        """Get the gateway URL."""
+        return self._gateway_client.base_url
 
     @property
     def timeout(self) -> int:
