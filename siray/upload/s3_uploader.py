@@ -71,7 +71,6 @@ class S3Uploader:
             region_name=region,
             endpoint_url=endpoint_url,
             config=config,
-            verify=False,  # Disable SSL verification for UCloud US3
         )
 
     def upload_file(
