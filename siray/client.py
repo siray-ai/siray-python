@@ -7,6 +7,7 @@ from typing import Optional
 
 from .base_client import BaseClient
 from .resources.file import File
+from .resources.generation_3d import Generation3D
 from .resources.image import Image
 from .resources.video import Video
 
@@ -15,13 +16,14 @@ class Siray:
     """
     Main client for interacting with Siray AI API.
 
-    This client provides access to image and video generation capabilities
-    through namespace attributes.
+    This client provides access to image, video, and 3D model generation
+    capabilities through namespace attributes.
 
     Attributes:
         file: File upload namespace
         image: Image generation namespace
         video: Video generation namespace
+        generation_3d: 3D model generation namespace
 
     Example:
         >>> from siray import Siray
@@ -82,6 +84,7 @@ class Siray:
         self.file = File(self._gateway_client)
         self.image = Image(self._base_client)
         self.video = Video(self._base_client)
+        self.generation_3d = Generation3D(self._base_client)
 
     @property
     def api_key(self) -> str:
