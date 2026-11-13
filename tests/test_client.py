@@ -66,6 +66,7 @@ class TestSirayClient:
         client = Siray(api_key="test-api-key")
         assert hasattr(client, "image")
         assert hasattr(client, "video")
+        assert hasattr(client, "audio")
 
 
 class TestImageNamespace:
@@ -77,6 +78,16 @@ class TestImageNamespace:
         assert hasattr(client.image, "generate_async")
         assert hasattr(client.image, "query_task")
         assert hasattr(client.image, "run")
+
+
+class TestAudioNamespace:
+    """Test Audio namespace methods."""
+
+    def test_audio_has_required_methods(self):
+        client = Siray(api_key="test-api-key")
+        assert hasattr(client.audio, "generate_async")
+        assert hasattr(client.audio, "query_task")
+        assert hasattr(client.audio, "run")
 
 
 class TestVideoNamespace:

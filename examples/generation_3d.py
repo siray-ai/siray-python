@@ -18,7 +18,7 @@ def example_text_to_3d():
     print("=== Text-to-3D Generation ===")
 
     try:
-        response = client.generation_3d.generate_async(
+        response = client.three_d.generate_async(
             model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
             prompt="A cute cartoon cat sitting on a table",
             pbr_enable=True,
@@ -39,7 +39,7 @@ def example_image_to_3d():
     print("\n=== Image-to-3D Generation ===")
 
     try:
-        response = client.generation_3d.generate_async(
+        response = client.three_d.generate_async(
             model="tencent/hunyuan3d-v2.5-rapid-image-to-3d",
             image="https://example.com/cat.png",
             pbr_enable=True,
@@ -60,7 +60,7 @@ def example_blocking_text_to_3d():
     print("\n=== Blocking Text-to-3D Generation ===")
 
     try:
-        status = client.generation_3d.run(
+        status = client.three_d.run(
             model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
             prompt="A medieval sword with ornate handle",
             pbr_enable=True,
@@ -90,7 +90,7 @@ def example_query_3d_task_status():
 
     try:
         # Start an async generation
-        response = client.generation_3d.generate_async(
+        response = client.three_d.generate_async(
             model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
             prompt="A wooden treasure chest",
         )
@@ -98,7 +98,7 @@ def example_query_3d_task_status():
         print(f"Task ID: {response.task_id}")
 
         # Query the task status
-        status = client.generation_3d.query_task(response.task_id)
+        status = client.three_d.query_task(response.task_id)
 
         print(f"Status: {status.status}")
         print(f"Progress: {status.progress}")

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from .base_client import BaseClient
+from .resources.audio import Audio
 from .resources.file import File
 from .resources.generation_3d import Generation3D
 from .resources.image import Image
@@ -21,9 +22,11 @@ class Siray:
 
     Attributes:
         file: File upload namespace
+        audio: Audio/music generation namespace
         image: Image generation namespace
         video: Video generation namespace
-        generation_3d: 3D model generation namespace
+        three_d: 3D model generation namespace
+        generation_3d: Backward-compatible alias for ``three_d``
 
     Example:
         >>> from siray import Siray
@@ -40,6 +43,12 @@ class Siray:
         >>> result = client.video.generate_async(
         ...     model="your-video-model",
         ...     prompt="A cat playing piano"
+        ... )
+        >>>
+        >>> # Generate audio/music
+        >>> result = client.audio.generate_async(
+        ...     model="minimax/music-3.0",
+        ...     prompt="Cinematic pop song"
         ... )
     """
 
@@ -82,9 +91,12 @@ class Siray:
 
         # Initialize namespaces
         self.file = File(self._gateway_client)
+        self.audio = Audio(self._base_client)
         self.image = Image(self._base_client)
         self.video = Video(self._base_client)
-        self.generation_3d = Generation3D(self._base_client)
+        self.three_d = Generation3D(self._base_client)
+        # Backward-compatible alias; prefer `three_d`.
+        self.generation_3d = self.three_d
 
     @property
     def api_key(self) -> str:

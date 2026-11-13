@@ -4,7 +4,7 @@
 [![Python version](https://img.shields.io/pypi/pyversions/siray.svg)](https://pypi.org/project/siray/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-The official Python client library for [Siray AI](https://siray.ai) - a platform for AI-powered image and video generation.
+The official Python client library for [Siray AI](https://siray.ai) - a platform for AI-powered image, video, audio, and 3D generation.
 
 ## Installation
 
@@ -123,7 +123,42 @@ status = client.video.run(
 print(status.status)
 ```
 
-> A complete blocking flow for both media types lives in `examples/blocking_generation.py`.
+> A complete blocking flow for image/video generation lives in `examples/blocking_generation.py`.
+
+### Audio Generation
+
+```python
+from siray import Siray
+
+client = Siray()
+
+response = client.audio.generate_async(
+    model="minimax/music-3.0",
+    prompt="Cinematic pop song with an emotional female lead vocal",
+    lyrics="[Verse]\nI left the light on by the door",
+    lyrics_optimizer=False,
+    is_instrumental=False,
+    bitrate=256000,
+    sample_rate=44100,
+)
+
+print(f"Task ID: {response.task_id}")
+
+status = client.audio.query_task(response.task_id)
+if status.is_completed():
+    print(f"Generated audio: {status.result}")
+    print(f"All outputs: {status.outputs}")
+elif status.is_failed():
+    print(f"Error: {status.fail_reason}")
+
+# Blocking helper; defaults to a 10 minute timeout
+final_status = client.audio.run(
+    model="minimax/music-3.0",
+    prompt="Instrumental cinematic pop",
+    lyrics_optimizer=True,
+    is_instrumental=True,
+)
+```
 
 ### File Upload
 
@@ -170,6 +205,7 @@ Main client for interacting with Siray AI API.
 **Attributes:**
 - `file`: File upload namespace
 - `image`: Image generation namespace
+- `audio`: Audio/music generation namespace
 - `video`: Video generation namespace
 
 ### File
@@ -277,6 +313,20 @@ Start an async image generation and continuously poll its status until it comple
 
 **Raises:**
 - `TimeoutError`: If the task is still processing when the timeout is reached
+
+### Audio
+
+#### `audio.generate_async(model, prompt, **kwargs)`
+
+Start an asynchronous audio/music generation task.
+
+#### `audio.query_task(task_id)`
+
+Query the status of an audio generation task.
+
+#### `audio.run(model, prompt, poll_interval=2.0, timeout=600, **kwargs)`
+
+Start an audio generation and block until it finishes. The default timeout is 10 minutes.
 
 ### Video
 
@@ -404,6 +454,7 @@ See the [examples](examples/) directory for more comprehensive usage examples:
 
 - [File upload](examples/file_upload.py)
 - [Basic image generation](examples/image_generation.py)
+- [Audio generation](examples/audio_generation.py)
 - [Video generation](examples/video_generation.py)
 - [Error handling](examples/error_handling.py)
 - [Blocking generation helper (`run`)](examples/blocking_generation.py)

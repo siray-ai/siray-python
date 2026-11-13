@@ -15,13 +15,13 @@ class Generation3D:
         >>> client = Siray(api_key="your-api-key")
         >>>
         >>> # Text-to-3D
-        >>> result = client.generation_3d.run(
+        >>> result = client.three_d.run(
         ...     model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
         ...     prompt="A cute cartoon cat",
         ... )
         >>>
         >>> # Image-to-3D
-        >>> result = client.generation_3d.run(
+        >>> result = client.three_d.run(
         ...     model="tencent/hunyuan3d-v2.5-rapid-image-to-3d",
         ...     image="https://example.com/cat.png",
         ... )
@@ -60,7 +60,7 @@ class Generation3D:
 
         Example:
             >>> client = Siray(api_key="your-api-key")
-            >>> response = client.generation_3d.generate_async(
+            >>> response = client.three_d.generate_async(
             ...     model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
             ...     prompt="A cute cartoon cat",
             ... )
@@ -86,12 +86,12 @@ class Generation3D:
 
         Example:
             >>> client = Siray(api_key="your-api-key")
-            >>> response = client.generation_3d.generate_async(
+            >>> response = client.three_d.generate_async(
             ...     model="tencent/hunyuan3d-v2.5-rapid-text-to-3d",
             ...     prompt="A cute cartoon cat",
             ... )
             >>>
-            >>> status = client.generation_3d.query_task(response.task_id)
+            >>> status = client.three_d.query_task(response.task_id)
             >>> if status.is_completed():
             ...     print(f"3D model URL: {status.result}")
             >>> elif status.is_failed():
